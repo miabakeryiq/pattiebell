@@ -40,9 +40,14 @@
 
     /* Hide the mouse cursor once fullscreen */
     :fullscreen,
-    :fullscreen * { cursor: none; }
+    :fullscreen * {
+      cursor: none;
+    }
+
     :-webkit-full-screen,
-    :-webkit-full-screen * { cursor: none; }
+    :-webkit-full-screen * {
+      cursor: none;
+    }
 
     video {
       position: absolute;
@@ -187,7 +192,7 @@
     };
 
     // ← Set to your Render URL
-    const API_BASE = "http://localhost:3000";
+    const API_BASE = "https://pb-prices.onrender.com";
     const SCREEN_ID = window.MENU_SCREEN_ID || "pattie_bell-screen1";
     const POLL_MS = window.MENU_POLL_MS || 5000;
 
