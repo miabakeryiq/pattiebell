@@ -1,0 +1,536 @@
+{
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "items": [
+    {
+      "id": "lbl_dinner_m",
+      "label": "M",
+      "x": 1703,
+      "y": 177,
+      "fontSize": 17,
+      "type": "label"
+    },
+    {
+      "id": "lbl_dinner_lg",
+      "label": "LG",
+      "x": 1807,
+      "y": 180,
+      "fontSize": 17,
+      "type": "label"
+    },
+    {
+      "id": "lbl_seafood_sm",
+      "label": "SM",
+      "x": 817,
+      "y": 183,
+      "fontSize": 18,
+      "type": "label"
+    },
+    {
+      "id": "lbl_seafood_m",
+      "label": "M",
+      "x": 911,
+      "y": 183,
+      "fontSize": 18,
+      "type": "label"
+    },
+    {
+      "id": "lbl_seafood_lg",
+      "label": "LG",
+      "x": 1008,
+      "y": 184,
+      "fontSize": 18,
+      "type": "label"
+    },
+    {
+      "id": "jbf_chicken_sm",
+      "label": "Jerk / BBQ / Fried Chicken (SM)",
+      "x": 819,
+      "y": 237,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "jbf_chicken_m",
+      "label": "Jerk / BBQ / Fried Chicken (M)",
+      "x": 912,
+      "y": 237,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "jbf_chicken_lg",
+      "label": "Jerk / BBQ / Fried Chicken (LG)",
+      "x": 1009,
+      "y": 236,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "scb_snapper_sm",
+      "label": "Stew / Curry / Baked Chicken (SM)",
+      "x": 819,
+      "y": 286,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "scb_snapper_m",
+      "label": "Stew / Curry / Baked Chicken (M)",
+      "x": 912,
+      "y": 283,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "scb_snapper_lg",
+      "label": "Stew / Curry / Baked Chicken (LG)",
+      "x": 1009,
+      "y": 283,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "boneless_jerk_sm",
+      "label": "Boneless Jerk (SM)",
+      "x": 820,
+      "y": 336,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "boneless_jerk_m",
+      "label": "Boneless Jerk (M)",
+      "x": 913,
+      "y": 336,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "boneless_jerk_lg",
+      "label": "Boneless Jerk (LG)",
+      "x": 1009,
+      "y": 336,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "currygoat_jerkpork_sm",
+      "label": "Curry Goat / Jerk Pork (SM)",
+      "x": 820,
+      "y": 388,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "currygoat_jerkpork_m",
+      "label": "Curry Goat / Jerk Pork (M)",
+      "x": 914,
+      "y": 385,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "currygoat_jerkpork_lg",
+      "label": "Curry Goat / Jerk Pork (LG)",
+      "x": 1009,
+      "y": 385,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "wings_sm",
+      "label": "Jerk / BBQ / Fried / Sweet Chili (SM)",
+      "x": 819,
+      "y": 444,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "wings_m",
+      "label": "Jerk / BBQ / Fried / Sweet Chili (M)",
+      "x": 915,
+      "y": 443,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "wings_lg",
+      "label": "Jerk / BBQ / Fried / Sweet Chili (LG)",
+      "x": 1011,
+      "y": 444,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "stew_peas_sm",
+      "label": "Stew Peas (SM)",
+      "x": 819,
+      "y": 493,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "stew_peas_m",
+      "label": "Stew Peas (M)",
+      "x": 916,
+      "y": 493,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "stew_peas_lg",
+      "label": "Stew Peas (LG)",
+      "x": 1010,
+      "y": 493,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "cowfoot_sm",
+      "label": "Cowfoot (SM)",
+      "x": 820,
+      "y": 539,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "cowfoot_m",
+      "label": "Cowfoot (M)",
+      "x": 916,
+      "y": 538,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "cowfoot_lg",
+      "label": "Cowfoot (LG)",
+      "x": 1010,
+      "y": 538,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_plate_sm",
+      "label": "Veggie Plate (SM)",
+      "x": 820,
+      "y": 584,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_plate_m",
+      "label": "Veggie Plate (M)",
+      "x": 917,
+      "y": 583,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_plate_lg",
+      "label": "Veggie Plate (LG)",
+      "x": 1010,
+      "y": 585,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "ribs_sm",
+      "label": "Ribs (SM)",
+      "x": 820,
+      "y": 637,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "ribs_m",
+      "label": "Ribs (M)",
+      "x": 918,
+      "y": 637,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "ribs_lg",
+      "label": "Ribs (LG)",
+      "x": 1010,
+      "y": 636,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "oxtail_sm",
+      "label": "Oxtail (SM)",
+      "x": 820,
+      "y": 680,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "oxtail_m",
+      "label": "Oxtail (M)",
+      "x": 918,
+      "y": 680,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "oxtail_lg",
+      "label": "Oxtail (LG)",
+      "x": 1010,
+      "y": 681,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "steamed_snapper_m",
+      "label": "Steamed Snapper (M)",
+      "x": 1703,
+      "y": 221,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "steamed_snapper_lg",
+      "label": "Steamed Snapper (LG)",
+      "x": 1806,
+      "y": 221,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "sliced_snapper_m",
+      "label": "Sliced Snapper (M)",
+      "x": 1704,
+      "y": 270,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "sliced_snapper_lg",
+      "label": "Sliced Snapper (LG)",
+      "x": 1806,
+      "y": 270,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "kingfish_m",
+      "label": "Kingfish (M)",
+      "x": 1705,
+      "y": 315,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "kingfish_lg",
+      "label": "Kingfish (LG)",
+      "x": 1806,
+      "y": 316,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "tilapia_m",
+      "label": "Tilapia (M)",
+      "x": 1706,
+      "y": 360,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "tilapia_lg",
+      "label": "Tilapia (LG)",
+      "x": 1806,
+      "y": 361,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "whitening_m",
+      "label": "whitening (M)",
+      "x": 1707,
+      "y": 415,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "whitening_lg",
+      "label": "whitening (LG)",
+      "x": 1806,
+      "y": 416,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "sliced_snapper_single_m",
+      "label": "Sliced Snapper Single(M)",
+      "x": 1707,
+      "y": 459,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "sliced_snapper_single_lg",
+      "label": "Sliced Snapper Single (LG)",
+      "x": 1807,
+      "y": 459,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "porgie_m",
+      "label": "Porgie (M)",
+      "x": 1707,
+      "y": 502,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "porgie_lg",
+      "label": "Porgie (LG)",
+      "x": 1808,
+      "y": 501,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "wing",
+      "label": "Wing",
+      "x": 1366,
+      "y": 659,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "leg",
+      "label": "Leg",
+      "x": 1367,
+      "y": 693,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "thigh",
+      "label": "Thigh",
+      "x": 1367,
+      "y": 729,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "breast",
+      "label": "Breast",
+      "x": 1368,
+      "y": 769,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "cnter_breast",
+      "label": "Center Breast",
+      "x": 1368,
+      "y": 807,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "extra_plantains",
+      "label": "Extra Plantains",
+      "x": 1853,
+      "y": 653,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "extra_rice",
+      "label": "Extra Scoop of Rice",
+      "x": 1854,
+      "y": 698,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "extra_wing",
+      "label": "Extra Wing",
+      "x": 1855,
+      "y": 748,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "drum_flats",
+      "label": "Drum or Flats Only",
+      "x": 1855,
+      "y": 795,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "sides_sm",
+      "label": "Sides Small Price",
+      "x": 1168,
+      "y": 996,
+      "fontSize": 18,
+      "type": "price"
+    },
+    {
+      "id": "sides_lg",
+      "label": "Sides Large Price",
+      "x": 1296,
+      "y": 993,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "jerk_pork_side_sm",
+      "label": "Jerk Pork Side (Small)",
+      "x": 1746,
+      "y": 933,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "jerk_pork_side_lg",
+      "label": "Jerk Pork Side (Large)",
+      "x": 1861,
+      "y": 934,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "white_rice_sm",
+      "label": "White Rice (Small)",
+      "x": 1747,
+      "y": 983,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "white_rice_lg",
+      "label": "White Rice (Large)",
+      "x": 1862,
+      "y": 982,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "plantains_portion_sm",
+      "label": "Plantains Portion (Small)",
+      "x": 1749,
+      "y": 1036,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "plantains_portion_lg",
+      "label": "Plantains Portion (Large)",
+      "x": 1861,
+      "y": 1036,
+      "fontSize": 16,
+      "type": "price"
+    }
+  ]
+}

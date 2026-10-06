@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overlay Editor — Breakfast Screen</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: #f2f2f2;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 16px;
+      border-right: 1px solid rgba(255, 255, 255, .12);
+      overflow: auto;
+      background: #171717;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .hint,
+    .status {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .06);
+      margin-bottom: 14px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+
+    button {
+      border: 0;
+      background: #f5c518;
+      color: #111;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #2a2a2a;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .15);
+    }
+
+    .field {
+      margin: 10px 0;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      opacity: .75;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: #0f0f0f;
+      color: #fff;
+    }
+
+    .list {
+      margin-top: 12px;
+      display: grid;
+      gap: 6px;
+      max-height: 40vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .item {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .04);
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .item.active {
+      border-color: #f5c518;
+      background: rgba(245, 197, 24, .12);
+    }
+
+    .item.selected {
+      border-color: rgba(245, 197, 24, .5);
+      background: rgba(245, 197, 24, .07);
+    }
+
+    .micro {
+      font-size: 12px;
+      opacity: .75;
+      margin-top: 8px;
+    }
+
+    main {
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    /* Updated stage aspect ratio to 16:9 Landscape */
+    .stage {
+      position: relative;
+      width: min(1080px, calc(100vw - 420px));
+      aspect-ratio: 1920 / 1080;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, .12);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .frame-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+      z-index: 1;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+    }
+
+    .overlay-item {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      min-width: 8px;
+      text-align: center;
+      background: transparent;
+      color: #111;
+      border: 0;
+      cursor: grab;
+      user-select: none;
+      font-weight: 800;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .overlay-item.active {
+      outline: 1.5px dashed rgba(245, 197, 24, .95);
+      z-index: 6;
+    }
+
+    .overlay-item.selected {
+      outline: 1.5px solid rgba(245, 197, 24, .6);
+      z-index: 5;
+    }
+
+    .overlay-item.active.selected {
+      outline: 2px solid #f5c518;
+      z-index: 6;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      margin-top: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, .15);
+      background: #0f0f0f;
+      color: #e8e8e8;
+      padding: 12px;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <h1>Middle Screen Editor</h1>
+    <div class="hint">
+      <strong>Click</strong> to select one item.<br>
+      <strong>Shift+Click</strong> to add/remove from selection.<br>
+      <strong>Drag</strong> any selected item to move the whole group.<br>
+      Arrow keys nudge 1px · Shift+Arrow = 10px.
+    </div>
+
+    <div class="toolbar">
+      <button id="copyBtn">Copy JSON</button>
+      <button class="secondary" id="downloadBtn">Download JSON</button>
+      <button class="secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="status" id="saveStatus">Loading…</div>
+
+    <div class="field">
+      <label>Selected</label>
+      <input id="selectedId" readonly />
+    </div>
+    <div class="field">
+      <label>X</label>
+      <input id="posX" type="number" step="1" />
+    </div>
+    <div class="field">
+      <label>Y</label>
+      <input id="posY" type="number" step="1" />
+    </div>
+    <div class="field">
+      <label>Font size (px) — applies to all selected</label>
+      <input id="fontSize" type="number" step="1" min="8" max="120" />
+    </div>
+
+    <div class="list" id="list"></div>
+    <textarea id="exportBox" spellcheck="false"></textarea>
+  </aside>
+
+  <main>
+    <div class="stage" id="stage">
+      <img src="./breakfast.png" alt="" class="frame-img" />
+      <div id="overlay"></div>
+    </div>
+  </main>
+
+  <script>
+    /* Updated canvas resolution to 1920x1080 Landscape */
+    const CW = 1920, CH = 1080;
+
+    const DEFAULT_MAP = {
+      "canvas": { "width": CW, "height": CH },
+      "items": [
+        // Column Headers
+        {
+          "id": "lbl_dinner_m",
+          "label": "M",
+          "x": 1703,
+          "y": 177,
+          "fontSize": 17,
+          "type": "label"
+        },
+        {
+          "id": "lbl_dinner_lg",
+          "label": "LG",
+          "x": 1807,
+          "y": 180,
+          "fontSize": 17,
+          "type": "label"
+        },
+        {
+          "id": "lbl_seafood_sm",
+          "label": "SM",
+          "x": 817,
+          "y": 183,
+          "fontSize": 18,
+          "type": "label"
+        },
+        {
+          "id": "lbl_seafood_m",
+          "label": "M",
+          "x": 911,
+          "y": 183,
+          "fontSize": 18,
+          "type": "label"
+        },
+        {
+          "id": "lbl_seafood_lg",
+          "label": "LG",
+          "x": 1008,
+          "y": 184,
+          "fontSize": 18,
+          "type": "label"
+        },
+        // Dinners (SM, M, LG)
+        {
+          "id": "jbf_chicken_sm",
+          "label": "Jerk / BBQ / Fried Chicken (SM)",
+          "x": 819,
+          "y": 237,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "jbf_chicken_m",
+          "label": "Jerk / BBQ / Fried Chicken (M)",
+          "x": 912,
+          "y": 237,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "jbf_chicken_lg",
+          "label": "Jerk / BBQ / Fried Chicken (LG)",
+          "x": 1009,
+          "y": 236,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "scb_snapper_sm",
+          "label": "Stew / Curry / Baked Chicken (SM)",
+          "x": 819,
+          "y": 286,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "scb_snapper_m",
+          "label": "Stew / Curry / Baked Chicken (M)",
+          "x": 912,
+          "y": 283,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "scb_snapper_lg",
+          "label": "Stew / Curry / Baked Chicken (LG)",
+          "x": 1009,
+          "y": 283,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "boneless_jerk_sm",
+          "label": "Boneless Jerk (SM)",
+          "x": 820,
+          "y": 336,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "boneless_jerk_m",
+          "label": "Boneless Jerk (M)",
+          "x": 913,
+          "y": 336,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "boneless_jerk_lg",
+          "label": "Boneless Jerk (LG)",
+          "x": 1009,
+          "y": 336,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "currygoat_jerkpork_sm",
+          "label": "Curry Goat / Jerk Pork (SM)",
+          "x": 820,
+          "y": 388,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "currygoat_jerkpork_m",
+          "label": "Curry Goat / Jerk Pork (M)",
+          "x": 914,
+          "y": 385,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "currygoat_jerkpork_lg",
+          "label": "Curry Goat / Jerk Pork (LG)",
+          "x": 1009,
+          "y": 385,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "wings_sm",
+          "label": "Jerk / BBQ / Fried / Sweet Chili (SM)",
+          "x": 819,
+          "y": 444,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "wings_m",
+          "label": "Jerk / BBQ / Fried / Sweet Chili (M)",
+          "x": 915,
+          "y": 443,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "wings_lg",
+          "label": "Jerk / BBQ / Fried / Sweet Chili (LG)",
+          "x": 1011,
+          "y": 444,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "stew_peas_sm",
+          "label": "Stew Peas (SM)",
+          "x": 819,
+          "y": 493,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "stew_peas_m",
+          "label": "Stew Peas (M)",
+          "x": 916,
+          "y": 493,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "stew_peas_lg",
+          "label": "Stew Peas (LG)",
+          "x": 1010,
+          "y": 493,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "cowfoot_sm",
+          "label": "Cowfoot (SM)",
+          "x": 820,
+          "y": 539,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "cowfoot_m",
+          "label": "Cowfoot (M)",
+          "x": 916,
+          "y": 538,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "cowfoot_lg",
+          "label": "Cowfoot (LG)",
+          "x": 1010,
+          "y": 538,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "veggie_plate_sm",
+          "label": "Veggie Plate (SM)",
+          "x": 820,
+          "y": 584,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "veggie_plate_m",
+          "label": "Veggie Plate (M)",
+          "x": 917,
+          "y": 583,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "veggie_plate_lg",
+          "label": "Veggie Plate (LG)",
+          "x": 1010,
+          "y": 585,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "ribs_sm",
+          "label": "Ribs (SM)",
+          "x": 820,
+          "y": 637,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "ribs_m",
+          "label": "Ribs (M)",
+          "x": 918,
+          "y": 637,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "ribs_lg",
+          "label": "Ribs (LG)",
+          "x": 1010,
+          "y": 636,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "oxtail_sm",
+          "label": "Oxtail (SM)",
+          "x": 820,
+          "y": 680,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "oxtail_m",
+          "label": "Oxtail (M)",
+          "x": 918,
+          "y": 680,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "oxtail_lg",
+          "label": "Oxtail (LG)",
+          "x": 1010,
+          "y": 681,
+          "fontSize": 16,
+          "type": "price"
+        },
+
+        // Seafood (M, LG)
+        {
+          "id": "steamed_snapper_m",
+          "label": "Steamed Snapper (M)",
+          "x": 1703,
+          "y": 221,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "steamed_snapper_lg",
+          "label": "Steamed Snapper (LG)",
+          "x": 1806,
+          "y": 221,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "sliced_snapper_m",
+          "label": "Sliced Snapper (M)",
+          "x": 1704,
+          "y": 270,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "sliced_snapper_lg",
+          "label": "Sliced Snapper (LG)",
+          "x": 1806,
+          "y": 270,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "kingfish_m",
+          "label": "Kingfish (M)",
+          "x": 1705,
+          "y": 315,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "kingfish_lg",
+          "label": "Kingfish (LG)",
+          "x": 1806,
+          "y": 316,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "tilapia_m",
+          "label": "Tilapia (M)",
+          "x": 1706,
+          "y": 360,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "tilapia_lg",
+          "label": "Tilapia (LG)",
+          "x": 1806,
+          "y": 361,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "whitening_m",
+          "label": "whitening (M)",
+          "x": 1707,
+          "y": 415,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "whitening_lg",
+          "label": "whitening (LG)",
+          "x": 1806,
+          "y": 416,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "sliced_snapper_single_m",
+          "label": "Sliced Snapper Single(M)",
+          "x": 1707,
+          "y": 459,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "sliced_snapper_single_lg",
+          "label": "Sliced Snapper Single (LG)",
+          "x": 1807,
+          "y": 459,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "porgie_m",
+          "label": "Porgie (M)",
+          "x": 1707,
+          "y": 502,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "porgie_lg",
+          "label": "Porgie (LG)",
+          "x": 1808,
+          "y": 501,
+          "fontSize": 16,
+          "type": "price"
+        },
+
+
+        // Individual Chicken Extra Add Ons
+        {
+          "id": "wing",
+          "label": "Wing",
+          "x": 1366,
+          "y": 659,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "leg",
+          "label": "Leg",
+          "x": 1367,
+          "y": 693,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "thigh",
+          "label": "Thigh",
+          "x": 1367,
+          "y": 729,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "breast",
+          "label": "Breast",
+          "x": 1368,
+          "y": 769,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "cnter_breast",
+          "label": "Center Breast",
+          "x": 1368,
+          "y": 807,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "extra_plantains",
+          "label": "Extra Plantains",
+          "x": 1853,
+          "y": 653,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "extra_rice",
+          "label": "Extra Scoop of Rice",
+          "x": 1854,
+          "y": 698,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "extra_wing",
+          "label": "Extra Wing",
+          "x": 1855,
+          "y": 748,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "drum_flats",
+          "label": "Drum or Flats Only",
+          "x": 1855,
+          "y": 795,
+          "fontSize": 16,
+          "type": "price"
+        },
+
+        // Sides
+        {
+          "id": "sides_sm",
+          "label": "Sides Small Price",
+          "x": 1168,
+          "y": 996,
+          "fontSize": 18,
+          "type": "price"
+        },
+        {
+          "id": "sides_lg",
+          "label": "Sides Large Price",
+          "x": 1296,
+          "y": 993,
+          "fontSize": 16,
+          "type": "price"
+        },
+
+        {
+          "id": "jerk_pork_side_sm",
+          "label": "Jerk Pork Side (Small)",
+          "x": 1746,
+          "y": 933,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "jerk_pork_side_lg",
+          "label": "Jerk Pork Side (Large)",
+          "x": 1861,
+          "y": 934,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "white_rice_sm",
+          "label": "White Rice (Small)",
+          "x": 1747,
+          "y": 983,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "white_rice_lg",
+          "label": "White Rice (Large)",
+          "x": 1862,
+          "y": 982,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "plantains_portion_sm",
+          "label": "Plantains Portion (Small)",
+          "x": 1749,
+          "y": 1036,
+          "fontSize": 16,
+          "type": "price"
+        },
+        {
+          "id": "plantains_portion_lg",
+          "label": "Plantains Portion (Large)",
+          "x": 1861,
+          "y": 1036,
+          "fontSize": 16,
+          "type": "price"
+        }
+
+      ]
+    };
+
+    const PRICE_VALUES = {
+      // Dinners (SM, M, LG)
+      "jbf_chicken_sm": 0, "jbf_chicken_m": 0, "jbf_chicken_lg": 0,
+      "scb_snapper_sm": 0, "scb_snapper_m": 0, "scb_snapper_lg": 0,
+      "boneless_jerk_sm": 0, "boneless_jerk_m": 0, "boneless_jerk_lg": 0,
+      "currygoat_jerkpork_sm": 0, "currygoat_jerkpork_m": 0, "currygoat_jerkpork_lg": 0,
+      "wings_sm": 0, "wings_m": 0, "wings_lg": 0,
+      "stew_peas_sm": 0, "stew_peas_m": 0, "stew_peas_lg": 0,
+      "cowfoot_sm": 0, "cowfoot_m": 0, "cowfoot_lg": 0,
+      "veggie_plate_sm": 0, "veggie_plate_m": 0, "veggie_plate_lg": 0,
+      "ribs_sm": 0, "ribs_m": 0, "ribs_lg": 0,
+      "oxtail_sm": 0, "oxtail_m": 0, "oxtail_lg": 0,
+
+      // Seafood (M, LG)
+      "steamed_snapper_m": 0, "steamed_snapper_lg": 0,
+      "sliced_snapper_m": 0, "sliced_snapper_lg": 0,
+      "kingfish_m": 0, "kingfish_lg": 0,
+      "tilapia_m": 0, "tilapia_lg": 0,
+      "whitening_m": 0, "whitening_lg": 0,
+      "sliced_snapper_single_m": 0, "sliced_snapper_single_lg": 0,
+      "porgie_m": 0, "porgie_lg": 0,
+
+      // Individual chicken pieces / add-ons
+      "wing": 0, "leg": 0, "thigh": 0, "breast": 0, "cnter_breast": 0,
+      "extra_plantains": 0, "extra_rice": 0, "extra_wing": 0, "drum_flats": 0,
+
+      // Sides
+      "sides_sm": 0, "sides_lg": 0,
+      "jerk_pork_side_sm": 0, "jerk_pork_side_lg": 0,
+      "white_rice_sm": 0, "white_rice_lg": 0,
+      "plantains_portion_sm": 0, "plantains_portion_lg": 0
+    };
+
+    const STORAGE_KEY = "mckenzie_overlay_editor_middle_landscape_v10";
+
+    const stage = document.getElementById("stage");
+    const overlay = document.getElementById("overlay");
+    const list = document.getElementById("list");
+    const exportBox = document.getElementById("exportBox");
+    const selectedIdEl = document.getElementById("selectedId");
+    const posXEl = document.getElementById("posX");
+    const posYEl = document.getElementById("posY");
+    const fontSizeEl = document.getElementById("fontSize");
+    const saveStatus = document.getElementById("saveStatus");
+
+    function clone(o) { return JSON.parse(JSON.stringify(o)); }
+    function setStatus(t) { saveStatus.textContent = t; }
+
+    function loadMap() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return clone(DEFAULT_MAP);
+        const p = JSON.parse(raw);
+        return (!p || !Array.isArray(p.items)) ? clone(DEFAULT_MAP) : p;
+      } catch (e) { return clone(DEFAULT_MAP); }
+    }
+
+    const state = {
+      map: loadMap(),
+      activeId: null,
+      selected: new Set()
+    };
+
+    function getItem(id) { return state.map.items.find(i => i.id === id); }
+
+    function formatPrice(v) {
+      const n = Number(v);
+      if (Number.isNaN(n)) return String(v ?? "");
+      return Number.isInteger(n) ? String(n) : n.toFixed(2);
+    }
+
+    // ── RENDER ────────────────────────────────────────────────────────────────
+    function renderStage() {
+      overlay.innerHTML = "";
+      for (const item of state.map.items) {
+        const isActive = item.id === state.activeId;
+        const isSelected = state.selected.has(item.id);
+        const el = document.createElement("div");
+        let cls = "overlay-item";
+        if (isSelected) cls += " selected";
+        if (isActive) cls += " active";
+        el.className = cls;
+        el.dataset.id = item.id;
+        el.style.left = (item.x / CW * 100) + "%";
+        el.style.top = (item.y / CH * 100) + "%";
+        el.style.fontSize = (item.fontSize || 16) + "px";
+        el.textContent = item.type === "label" ? item.label : formatPrice(PRICE_VALUES[item.id] ?? "");
+
+        if (item.type === "label") {
+          el.style.color = "#f5c518";
+          el.style.fontWeight = "900";
+          el.style.textDecoration = "underline";
+        } else {
+          el.style.color = "#111";
+        }
+        el.addEventListener("click", e => {
+          e.stopPropagation();
+          if (e.shiftKey || e.metaKey || e.ctrlKey) {
+            if (state.selected.has(item.id)) state.selected.delete(item.id);
+            else state.selected.add(item.id);
+          } else {
+            state.selected.clear();
+            state.selected.add(item.id);
+          }
+          state.activeId = item.id;
+          renderStage();
+        });
+        attachDrag(el, item.id);
+        overlay.appendChild(el);
+      }
+      renderList();
+      renderExport();
+      syncInputs();
+      queueSave();
+    }
+
+
+
+    // ── DRAG — delta-based so group moves together ─────────────────────────
+    function attachDrag(el, id) {
+      let dragging = false;
+      let startX, startY;
+      let origins = {};
+
+      el.addEventListener("pointerdown", e => {
+        e.stopPropagation();
+        if (!state.selected.has(id)) {
+          state.selected.clear();
+          state.selected.add(id);
+          state.activeId = id;
+          for (const el2 of overlay.querySelectorAll(".overlay-item")) {
+            el2.classList.remove("selected", "active");
+            if (state.selected.has(el2.dataset.id)) el2.classList.add("selected");
+            if (el2.dataset.id === state.activeId) el2.classList.add("active");
+          }
+          renderList(); syncInputs();
+        } else {
+          state.activeId = id;
+        }
+        dragging = true;
+        el.setPointerCapture(e.pointerId);
+
+        const rect = overlay.getBoundingClientRect();
+        startX = ((e.clientX - rect.left) / rect.width) * CW;
+        startY = ((e.clientY - rect.top) / rect.height) * CH;
+        origins = {};
+        for (const sid of state.selected) {
+          const item = getItem(sid);
+          if (item) origins[sid] = { x: item.x, y: item.y };
+        }
+      });
+
+      el.addEventListener("pointermove", e => {
+        if (!dragging) return;
+        const rect = overlay.getBoundingClientRect();
+        const cx = ((e.clientX - rect.left) / rect.width) * CW;
+        const cy = ((e.clientY - rect.top) / rect.height) * CH;
+        const dx = cx - startX;
+        const dy = cy - startY;
+
+        for (const sid of state.selected) {
+          const item = getItem(sid);
+          if (!item || !origins[sid]) continue;
+          item.x = Math.max(0, Math.min(CW, Math.round(origins[sid].x + dx)));
+          item.y = Math.max(0, Math.min(CH, Math.round(origins[sid].y + dy)));
+        }
+
+        for (const el2 of overlay.querySelectorAll(".overlay-item")) {
+          const item = getItem(el2.dataset.id);
+          if (item) {
+            el2.style.left = (item.x / CW * 100) + "%";
+            el2.style.top = (item.y / CH * 100) + "%";
+          }
+        }
+        syncInputs();
+        queueSave();
+      });
+
+      el.addEventListener("pointerup", () => {
+        if (dragging) justDragged = true;
+        dragging = false;
+        renderStage();
+      });
+      el.addEventListener("pointercancel", () => { dragging = false; });
+    }
+
+    // ── KEYBOARD ──────────────────────────────────────────────────────────────
+    document.addEventListener("keydown", e => {
+      if (!state.selected.size) return;
+      const step = e.shiftKey ? 10 : 1;
+      let dx = 0, dy = 0;
+      if (e.key === "ArrowLeft") dx = -step;
+      else if (e.key === "ArrowRight") dx = step;
+      else if (e.key === "ArrowUp") dy = -step;
+      else if (e.key === "ArrowDown") dy = step;
+      else return;
+      for (const sid of state.selected) {
+        const item = getItem(sid);
+        if (!item) continue;
+        item.x = Math.max(0, Math.min(CW, item.x + dx));
+        item.y = Math.max(0, Math.min(CH, item.y + dy));
+      }
+      renderStage();
+      e.preventDefault();
+    });
+
+    // ── INPUTS ────────────────────────────────────────────────────────────────
+    function syncInputs() {
+      const item = getItem(state.activeId);
+      const count = state.selected.size;
+      selectedIdEl.value = count > 1 ? `${count} items selected` : (item?.id || "");
+      posXEl.value = count > 1 ? "" : (item?.x ?? "");
+      posYEl.value = count > 1 ? "" : (item?.y ?? "");
+      fontSizeEl.value = item?.fontSize ?? 16;
+    }
+
+    posXEl.addEventListener("input", () => {
+      const item = getItem(state.activeId); if (!item) return;
+      const n = Number(posXEl.value); if (isNaN(n)) return;
+      item.x = Math.max(0, Math.min(CW, Math.round(n)));
+      renderStage();
+    });
+    posYEl.addEventListener("input", () => {
+      const item = getItem(state.activeId); if (!item) return;
+      const n = Number(posYEl.value); if (isNaN(n)) return;
+      item.y = Math.max(0, Math.min(CH, Math.round(n)));
+      renderStage();
+    });
+    fontSizeEl.addEventListener("input", () => {
+      const n = Number(fontSizeEl.value); if (isNaN(n)) return;
+      const size = Math.max(8, Math.min(120, Math.round(n)));
+      for (const sid of state.selected) {
+        const item = getItem(sid);
+        if (item) item.fontSize = size;
+      }
+      renderStage();
+    });
+
+    // ── LIST ──────────────────────────────────────────────────────────────────
+    function renderList() {
+      list.innerHTML = "";
+      for (const item of state.map.items) {
+        const el = document.createElement("div");
+        const isActive = item.id === state.activeId;
+        const isSelected = state.selected.has(item.id);
+        let cls = "item";
+        if (isSelected) cls += " selected";
+        if (isActive) cls += " active";
+        el.className = cls;
+        el.textContent = item.label;
+        el.onclick = (e) => {
+          if (e.shiftKey || e.metaKey || e.ctrlKey) {
+            if (state.selected.has(item.id)) state.selected.delete(item.id);
+            else state.selected.add(item.id);
+          } else {
+            state.selected.clear();
+            state.selected.add(item.id);
+          }
+          state.activeId = item.id;
+          renderStage();
+        };
+        list.appendChild(el);
+      }
+    }
+
+    // ── EXPORT / SAVE ─────────────────────────────────────────────────────────
+    function renderExport() { exportBox.value = JSON.stringify(state.map, null, 2); }
+
+    let saveTimer = null;
+    function queueSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.map));
+        setStatus("Autosaved.");
+      }, 150);
+    }
+
+    exportBox.addEventListener("change", () => {
+      try {
+        const p = JSON.parse(exportBox.value);
+        if (!p || !Array.isArray(p.items)) throw new Error("bad");
+        state.map = p;
+        state.selected.clear();
+        state.activeId = state.map.items[0]?.id ?? null;
+        state.selected.add(state.activeId);
+        renderStage(); setStatus("Loaded from JSON box.");
+      } catch (e) { setStatus("Invalid JSON."); }
+    });
+
+    document.getElementById("copyBtn").onclick = async () => {
+      renderExport();
+      await navigator.clipboard.writeText(exportBox.value);
+      setStatus("JSON copied.");
+    };
+    document.getElementById("downloadBtn").onclick = () => {
+      renderExport();
+      const blob = new Blob([exportBox.value], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "overlay-map-middle.json";
+      a.click(); URL.revokeObjectURL(a.href);
+      setStatus("Downloaded overlay-map-middle.json");
+    };
+    document.getElementById("resetBtn").onclick = () => {
+      localStorage.removeItem(STORAGE_KEY);
+      state.map = clone(DEFAULT_MAP);
+      state.selected.clear();
+      state.activeId = state.map.items[0]?.id ?? null;
+      state.selected.add(state.activeId);
+      renderStage(); setStatus("Reset to default map.");
+    };
+
+    let justDragged = false;
+    overlay.addEventListener("click", () => {
+      if (justDragged) { justDragged = false; return; }
+      state.activeId = null;
+      state.selected.clear();
+      renderStage();
+    });
+
+    window.addEventListener("resize", renderStage);
+
+    // ── INIT ──────────────────────────────────────────────────────────────────
+    setStatus(localStorage.getItem(STORAGE_KEY) ? "Loaded autosaved map." : "Using default map.");
+    state.activeId = state.map.items[0]?.id ?? null;
+    state.selected.add(state.activeId);
+    renderStage();
+
+
+
+
+  </script>
+</body>
+
+</html>

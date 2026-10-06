@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <!-- Mobile / Smart TV Fullscreen Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#000000">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Pattie Bell — Breakfast Screen</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* Hide the mouse cursor once fullscreen */
+    :fullscreen,
+    :fullscreen * {
+      cursor: none;
+    }
+
+    :-webkit-full-screen,
+    :-webkit-full-screen * {
+      cursor: none;
+    }
+
+    video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      /* Forces edge-to-edge fit with zero black space */
+      display: block;
+      z-index: 1;
+    }
+
+    video,
+    #overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+
+    #overlay {
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .price-tag {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      color: #111;
+      font-weight: 900;
+      white-space: nowrap;
+      letter-spacing: -0.03em;
+      text-rendering: geometricPrecision;
+      text-shadow:
+        0 0 1px rgba(0, 0, 0, 0.6),
+        0 1px 0 rgba(0, 0, 0, 0.35);
+      font-variant-numeric: tabular-nums lining-nums;
+      line-height: 1;
+    }
+
+    .price-tag {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      color: #000000;
+      /* Change this to your desired color (e.g., #ffffff for white, #f5c518 for gold/yellow) */
+      font-weight: 900;
+      white-space: nowrap;
+      letter-spacing: -0.03em;
+      text-rendering: geometricPrecision;
+      text-shadow:
+        0 0 2px rgba(0, 0, 0, .8),
+        0 1px 3px rgba(0, 0, 0, .9);
+      /* Updated drop-shadow for high contrast against video backgrounds */
+      font-variant-numeric: tabular-nums lining-nums;
+      line-height: 1;
+    }
+
+    #fsHint {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 20;
+      max-width: 90vw;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    .status {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      z-index: 10;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 12px;
+      opacity: .75;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <video id="player" loop playsinline webkit-playsinline muted preload="auto">
+      <source src="breakfast_menu.mp4" type="video/mp4">
+    </video>
+    <div id="overlay"></div>
+  </div>
+  <div id="fsHint"></div>
+  <div class="status" id="statusBox">Operate screen ready.</div>
+
+  <script>
+    async function loadOverlayMap() {
+      const res = await fetch('overlay-map-middle.json');
+      if (!res.ok) throw new Error('Failed to load overlay-map.json');
+      return await res.json();
+    }
+
+    const FALLBACK_PRICES = {
+
+
+      // Dinner (SM, M, LG)
+      jbf_chicken_sm: "0.00",
+      jbf_chicken_m: "0.00",
+      jbf_chicken_lg: "0.00",
+      scb_snapper_sm: "0.00",
+      scb_snapper_m: "0.00",
+      scb_snapper_lg: "0.00",
+      boneless_jerk_sm: "0.00",
+      boneless_jerk_m: "0.00",
+      boneless_jerk_lg: "0.00",
+      currygoat_jerkpork_sm: "0.00",
+      currygoat_jerkpork_m: "0.00",
+      currygoat_jerkpork_lg: "0.00",
+      wings_sm: "0.00",
+      wings_m: "0.00",
+      wings_lg: "0.00",
+      stew_peas_sm: "0.00",
+      stew_peas_m: "0.00",
+      stew_peas_lg: "0.00",
+      cowfoot_sm: "0.00",
+      cowfoot_m: "0.00",
+      cowfoot_lg: "0.00",
+      veggie_plate_sm: "0.00",
+      veggie_plate_m: "0.00",
+      veggie_plate_lg: "0.00",
+      ribs_sm: "0.00",
+      ribs_m: "0.00",
+      ribs_lg: "0.00",
+      oxtail_sm: "0.00",
+      oxtail_m: "0.00",
+      oxtail_lg: "0.00",
+
+      // Seafood
+      steamed_snapper_m: "0.00",
+      steamed_snapper_lg: "0.00",
+      sliced_snapper_m: "0.00",
+      sliced_snapper_lg: "0.00",
+      kingfish_m: "0.00",
+      kingfish_lg: "0.00",
+      tilapia_m: "0.00",
+      tilapia_lg: "0.00",
+      whitening_m: "0.00",
+      whitening_lg: "0.00",
+      sliced_snapper_single_m: "0.00",
+      sliced_snapper_single_lg: "0.00",
+      porgie_m: "0.00",
+      porgie_lg: "0.00",
+
+      // Individual Chicken & Add Ons
+      steamed_snapper_m: "0.00",
+      steamed_snapper_lg: "0.00",
+      sliced_snapper_m: "0.00",
+      sliced_snapper_lg: "0.00",
+      kingfish_m: "0.00",
+      kingfish_lg: "0.00",
+      tilapia_m: "0.00",
+      tilapia_lg: "0.00",
+      whitening_m: "0.00",
+      whitening_lg: "0.00",
+      sliced_snapper_single_m: "0.00",
+      sliced_snapper_single_lg: "0.00",
+      porgie_m: "0.00",
+      porgie_lg: "0.00",
+
+      // Chicken & Add Ons
+      wing: "0.00",
+      leg: "0.00",
+      thigh: "0.00",
+      breast: "0.00",
+      center_breast: "0.00",
+      extra_plantains: "0.00",
+      extra_rice: "0.00",
+      extra_wing: "0.00",
+      drum_flats: "0.00",
+
+      // Sides
+      sides_sm: "0.00",
+      sides_lg: "0.00",
+      jerk_pork_side_sm: "0.00",
+      jerk_pork_side_lg: "0.00",
+      white_rice_sm: "0.00",
+      white_rice_lg: "0.00",
+      plantains_portion_sm: "0.00",
+      plantains_portion_lg: "0.00"
+    };
+
+    // ← Set to your Render URL
+    const API_BASE = "http://localhost:3000";
+    const SCREEN_ID = window.MENU_SCREEN_ID || "pattie_bell-screen1";
+    const POLL_MS = window.MENU_POLL_MS || 5000;
+
+    const statusBox = document.getElementById("statusBox");
+    function setStatus(t) { statusBox.textContent = t; }
+
+    function formatPrice(value) {
+      if (value === null || value === undefined || value === "") return "";
+      const n = Number(value);
+      if (Number.isNaN(n)) return String(value);
+      return n === 0 ? "0" : (Number.isInteger(n) ? String(n) : n.toFixed(2));
+    }
+
+    function extractPrices(payload) {
+      if (!payload || typeof payload !== "object") return {};
+      if (payload.prices && typeof payload.prices === "object") return payload.prices;
+      if (payload.data && payload.data.prices && typeof payload.data.prices === "object") return payload.data.prices;
+      return payload;
+    }
+
+    async function loadPrices() {
+      try {
+        const res = await fetch(`${API_BASE}/screens/${encodeURIComponent(SCREEN_ID)}/prices`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`price fetch failed (${res.status})`);
+        setStatus("");
+        return extractPrices(await res.json());
+      } catch (e) {
+        setStatus("Using fallback prices. API unavailable.");
+        return FALLBACK_PRICES;
+      }
+    }
+
+    // Cache the map so we only fetch it once
+    let OVERLAY_MAP_CACHE = null;
+
+    async function getMap() {
+      if (OVERLAY_MAP_CACHE) return OVERLAY_MAP_CACHE;
+      OVERLAY_MAP_CACHE = await loadOverlayMap();
+      return OVERLAY_MAP_CACHE;
+    }
+
+    // Build overlay DOM once from the map
+    async function buildOverlay() {
+      const map = await getMap();
+      const overlay = document.getElementById("overlay");
+      overlay.innerHTML = "";
+      for (const item of map.items) {
+        const el = document.createElement("div");
+        el.className = "price-tag";
+        el.dataset.id = item.id;
+        el.dataset.type = item.type || "price";
+        el.style.left = `${(item.x / map.canvas.width) * 100}%`;
+        el.style.top = `${(item.y / map.canvas.height) * 100}%`;
+        el.style.fontSize = `${item.fontSize || 16}px`;
+        // Label items render immediately, price items wait for API
+        el.textContent = item.type === "label" ? item.label : "";
+        if (item.type === "label") {
+          el.style.color = "#f5c518";
+          el.style.textDecoration = "underline";
+        }
+        overlay.appendChild(el);
+      }
+    }
+
+    // Only update price text — no DOM rebuild, no flicker
+    async function updatePrices() {
+      const prices = await loadPrices();
+      const overlay = document.getElementById("overlay");
+      for (const el of overlay.querySelectorAll(".price-tag")) {
+        if (el.dataset.type === "label") continue; // skip labels
+
+        const val = prices[el.dataset.id];
+        // Show formatted price, or default to "0" if missing/zero
+        el.textContent = (val !== undefined && val !== null && val !== "") ? formatPrice(val) : "0";
+      }
+    }
+
+    async function init() {
+      await buildOverlay();
+      await updatePrices();
+      setInterval(updatePrices, POLL_MS);
+    }
+
+    const v = document.getElementById("player");
+    function tryPlay() {
+      v.play().catch(() => {
+        document.addEventListener("click", () => v.play(), { once: true });
+        document.addEventListener("touchstart", () => v.play(), { once: true });
+      });
+    }
+    v.addEventListener("loadeddata", tryPlay);
+    v.addEventListener("canplaythrough", tryPlay);
+    setTimeout(tryPlay, 2000);
+
+    // ── FULLSCREEN ──
+    // Browsers only allow fullscreen after a user action (click / tap / key),
+    // so the first interaction with the page switches to fullscreen.
+    function isFullscreen() {
+      return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    }
+
+    let hintTimer = null;
+    function showHint(msg) {
+      const box = document.getElementById("fsHint");
+      box.textContent = msg;
+      box.style.display = "block";
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => { box.style.display = "none"; }, 9000);
+    }
+
+    const NO_FS_MSG = "Can't go fullscreen in this browser. Press F11, or use Share / menu → Add to Home Screen, then open it from the home screen.";
+
+    function goFullscreen() {
+      if (isFullscreen()) return;
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (!req) { showHint(NO_FS_MSG); return; }
+      try {
+        const p = req.call(el);
+        if (p && p.catch) p.catch((err) => showHint(NO_FS_MSG + " (" + (err && err.message || err) + ")"));
+      } catch (e) { showHint(NO_FS_MSG); }
+    }
+
+    // Press F to toggle fullscreen at any time (Esc exits, as normal)
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "f" || e.key === "F") {
+        isFullscreen() ? (document.exitFullscreen || document.webkitExitFullscreen).call(document) : goFullscreen();
+      } else {
+        goFullscreen();
+      }
+    });
+    document.addEventListener("click", goFullscreen);
+    document.addEventListener("touchend", goFullscreen);
+
+    init();
+  </script>
+</body>
+
+</html>

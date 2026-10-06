@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Pattie Bell Middleware</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap"
+    rel="stylesheet">
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --surface2: #f1f5f9;
+      --border: rgba(0, 0, 0, .1);
+      --gold: #f5c518;
+      --gold-dim: rgba(245, 197, 24, .15);
+      --gold-border: rgba(245, 197, 24, .25);
+      --text: #0f172a;
+      --muted: rgba(15, 23, 42, .45);
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --red: #ef4444;
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overscroll-behavior: none;
+    }
+
+    #root {
+      min-height: 100vh;
+    }
+
+    /* ── LAYOUT ── */
+    .app {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px 16px 100px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      padding: 8px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .header p {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-bar .msg {
+      flex: 1;
+    }
+
+    .status-bar .count {
+      font-size: 11px;
+      background: var(--surface2);
+      padding: 4px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-ok {
+      color: var(--green);
+    }
+
+    .status-err {
+      color: var(--red);
+    }
+
+    .status-info {
+      color: var(--gold);
+    }
+
+    /* ── SCREEN TABS ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 11px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--gold-dim);
+      border-color: var(--gold-border);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ── SEARCH + ACTIONS ── */
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      padding: 12px 14px;
+      transition: border-color .15s;
+      -webkit-appearance: none;
+    }
+
+    .search-wrap input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .search-wrap input::placeholder {
+      color: var(--muted);
+    }
+
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      border: 0;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn:active {
+      transform: scale(.96);
+      opacity: .85;
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-dark {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-blue {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    /* ── PUSH SELECTED BAR ── */
+    .push-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      background: rgba(10, 10, 10, .95);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .push-bar .push-info {
+      flex: 1;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .push-bar .push-info strong {
+      color: var(--text);
+    }
+
+    /* ── CATEGORY HEADINGS ── */
+    .category-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--gold);
+      margin: 18px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--gold-border);
+    }
+
+    /* ── ITEM CARDS ── */
+    .item-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 8px;
+      transition: border-color .15s;
+    }
+
+    .item-card.selected {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .card-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+
+    .card-check.checked {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .card-check.checked::after {
+      content: '✓';
+      font-size: 13px;
+      color: #111;
+      font-weight: 900;
+    }
+
+    .card-name {
+      flex: 1;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .card-id {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      margin-top: 2px;
+    }
+
+    .card-prices {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .price-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .price-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .price-live {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--green);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    .price-live.zero {
+      color: var(--muted);
+    }
+
+    .price-input {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 10px 12px;
+      width: 100%;
+      -webkit-appearance: none;
+      transition: border-color .15s;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .price-input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .push-single {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--blue);
+      color: #fff;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      white-space: nowrap;
+      align-self: flex-end;
+    }
+
+    .push-single:active {
+      transform: scale(.95);
+    }
+
+    .push-single:disabled {
+      opacity: .35;
+      pointer-events: none;
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    /* ── LOADING SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      const { useState, useEffect, useMemo } = React;
+
+      const DEFAULT_API_BASE = "http://localhost:3000";
+      const SCREENS = [
+        { id: "pattie_bell-screen1", label: "Screen 1" },
+        { id: "pattie_bell-screen2", label: "Screen 2 · Dinner" }
+      ];
+
+      const SCREEN1_ITEMS = [
+
+        // Breakfast / Porridge
+        { id: "codfish_callaloo_sm", name: "Codfish & Callaloo (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "codfish_callaloo_lg", name: "Codfish & Callaloo (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "ackee_saltfish_sm", name: "Ackee & Saltfish (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "ackee_saltfish_lg", name: "Ackee & Saltfish (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "callaloo_sm", name: "Callaloo (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "callaloo_lg", name: "Callaloo (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "codfish_okra_sm", name: "Codfish & Okra (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "codfish_okra_lg", name: "Codfish & Okra (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "liver_sm", name: "Liver (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "liver_lg", name: "Liver (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "okra_callaloo_sm", name: "Okra & Callaloo (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "okra_callaloo_lg", name: "Okra & Callaloo (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "okra_sm", name: "Okra (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "okra_lg", name: "Okra (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "porridge_sm", name: "Porridge (Small)", category: "Breakfast / Porridge", defaultPrice: 0 },
+        { id: "porridge_lg", name: "Porridge (Large)", category: "Breakfast / Porridge", defaultPrice: 0 },
+
+        // Soups & Broth
+        { id: "goat_head_soup", name: "Goat Head Soup", category: "Soups & Broth", defaultPrice: 0 },
+        { id: "chicken_soup", name: "Chicken Soup", category: "Soups & Broth", defaultPrice: 0 },
+        { id: "cow_foot_soup", name: "Cow Foot Soup", category: "Soups & Broth", defaultPrice: 0 },
+        { id: "red_peas_chicken_soup", name: "Red Peas Chicken Soup", category: "Soups & Broth", defaultPrice: 0 },
+        { id: "broth", name: "Broth", category: "Soups & Broth", defaultPrice: 0 },
+        { id: "gravy_only", name: "Gravy Only", category: "Soups & Broth", defaultPrice: 0 },
+
+        // Pastas
+        { id: "pasta_oxtail_sm", name: "Oxtail Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_oxtail_m", name: "Oxtail Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_oxtail_lg", name: "Oxtail Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_snapper_sm", name: "King Fish / Sliced Snapper Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_snapper_m", name: "King Fish / Sliced Snapper Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_snapper_lg", name: "King Fish / Sliced Snapper Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_goat_sm", name: "Goat Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_goat_m", name: "Goat Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_goat_lg", name: "Goat Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_tilapia_sm", name: "Tilapia Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_tilapia_m", name: "Tilapia Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_tilapia_lg", name: "Tilapia Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_wings_sm", name: "Wings Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_wings_m", name: "Wings Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_wings_lg", name: "Wings Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_porgie_sm", name: "Porgie Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_porgie_m", name: "Porgie Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_porgie_lg", name: "Porgie Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_stewpeas_sm", name: "Stewpeas Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_stewpeas_m", name: "Stewpeas Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_stewpeas_lg", name: "Stewpeas Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_pork_ribs_sm", name: "Pork / Ribs Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_pork_ribs_m", name: "Pork / Ribs Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_pork_ribs_lg", name: "Pork / Ribs Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_chicken_sm", name: "Chicken Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_chicken_m", name: "Chicken Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "pasta_chicken_lg", name: "Chicken Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "veggie_pasta_sm", name: "Veggie Pasta Platter (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "veggie_pasta_m", name: "Veggie Pasta Platter (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "veggie_pasta_lg", name: "Veggie Pasta Platter (Large)", category: "Pastas", defaultPrice: 0 },
+        { id: "natty_sm", name: "Natty Pasta (Small)", category: "Pastas", defaultPrice: 0 },
+        { id: "natty_m", name: "Natty Pasta (Medium)", category: "Pastas", defaultPrice: 0 },
+        { id: "natty_lg", name: "Natty Pasta (Large)", category: "Pastas", defaultPrice: 0 },
+
+        // Beverages
+        { id: "iced_tea", name: "Iced Tea", category: "Beverages", defaultPrice: 0 },
+        { id: "lemonade", name: "Lemonade", category: "Beverages", defaultPrice: 0 },
+        { id: "peanut_punch", name: "Peanut Punch", category: "Beverages", defaultPrice: 0 }
+      ];
+
+      // Screen 2 — Breakfast menu
+      const SCREEN2_ITEMS = [
+        { id: "jbf_chicken_sm", name: "Jerk / BBQ / Fried Chicken (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "jbf_chicken_m", name: "Jerk / BBQ / Fried Chicken (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "jbf_chicken_lg", name: "Jerk / BBQ / Fried Chicken (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "scb_snapper_sm", name: "Stew / Curry / Baked Chicken (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "scb_snapper_m", name: "Stew / Curry / Baked Chicken (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "scb_snapper_lg", name: "Stew / Curry / Baked Chicken (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "boneless_jerk_sm", name: "Boneless Jerk (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "boneless_jerk_m", name: "Boneless Jerk (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "boneless_jerk_lg", name: "Boneless Jerk (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "currygoat_jerkpork_sm", name: "Curry Goat / Jerk Pork (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "currygoat_jerkpork_m", name: "Curry Goat / Jerk Pork (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "currygoat_jerkpork_lg", name: "Curry Goat / Jerk Pork (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "wings_sm", name: "Wings (Jerk / BBQ / Fried / Sweet Chili) (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "wings_m", name: "Wings (Jerk / BBQ / Fried / Sweet Chili) (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "wings_lg", name: "Wings (Jerk / BBQ / Fried / Sweet Chili) (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "stew_peas_sm", name: "Stew Peas (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "stew_peas_m", name: "Stew Peas (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "stew_peas_lg", name: "Stew Peas (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "cowfoot_sm", name: "Cowfoot (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "cowfoot_m", name: "Cowfoot (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "cowfoot_lg", name: "Cowfoot (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "veggie_plate_sm", name: "Veggie Plate (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "veggie_plate_m", name: "Veggie Plate (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "veggie_plate_lg", name: "Veggie Plate (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "ribs_sm", name: "Ribs (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "ribs_m", name: "Ribs (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "ribs_lg", name: "Ribs (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "oxtail_sm", name: "Oxtail (Small)", category: "Dinners", defaultPrice: 0 },
+        { id: "oxtail_m", name: "Oxtail (Medium)", category: "Dinners", defaultPrice: 0 },
+        { id: "oxtail_lg", name: "Oxtail (Large)", category: "Dinners", defaultPrice: 0 },
+        { id: "steamed_snapper_m", name: "Steamed Snapper (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "steamed_snapper_lg", name: "Steamed Snapper (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "sliced_snapper_m", name: "Sliced Snapper (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "sliced_snapper_lg", name: "Sliced Snapper (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "kingfish_m", name: "Kingfish (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "kingfish_lg", name: "Kingfish (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "tilapia_m", name: "Tilapia (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "tilapia_lg", name: "Tilapia (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "whitening_m", name: "Whiting (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "whitening_lg", name: "Whiting (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "sliced_snapper_single_m", name: "Sliced Snapper Single (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "sliced_snapper_single_lg", name: "Sliced Snapper Single (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "porgie_m", name: "Porgie (Medium)", category: "Seafood", defaultPrice: 0 },
+        { id: "porgie_lg", name: "Porgie (Large)", category: "Seafood", defaultPrice: 0 },
+        { id: "wing", name: "Wing", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "leg", name: "Leg", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "thigh", name: "Thigh", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "breast", name: "Breast", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "cnter_breast", name: "Center Breast", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "extra_plantains", name: "Extra Plantains", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "extra_rice", name: "Extra Scoop of Rice", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "extra_wing", name: "Extra Wing", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "drum_flats", name: "Drum or Flats Only", category: "Chicken Add-Ons", defaultPrice: 0 },
+        { id: "sides_sm", name: "Sides (Small)", category: "Sides", defaultPrice: 0 },
+        { id: "sides_lg", name: "Sides (Large)", category: "Sides", defaultPrice: 0 },
+        { id: "jerk_pork_side_sm", name: "Jerk Pork Side (Small)", category: "Sides", defaultPrice: 0 },
+        { id: "jerk_pork_side_lg", name: "Jerk Pork Side (Large)", category: "Sides", defaultPrice: 0 },
+        { id: "white_rice_sm", name: "White Rice (Small)", category: "Sides", defaultPrice: 0 },
+        { id: "white_rice_lg", name: "White Rice (Large)", category: "Sides", defaultPrice: 0 },
+        { id: "plantains_portion_sm", name: "Plantains Portion (Small)", category: "Sides", defaultPrice: 0 },
+        { id: "plantains_portion_lg", name: "Plantains Portion (Large)", category: "Sides", defaultPrice: 0 }
+      ];
+
+      const MENU_ITEMS = [
+        ...SCREEN1_ITEMS.map(i => ({ ...i, screen: SCREENS[0].id })),
+        ...SCREEN2_ITEMS.map(i => ({ ...i, screen: SCREENS[1].id }))
+      ];
+
+      function money(value) {
+        const n = Number(value);
+        if (Number.isNaN(n)) return "0";
+        return Number.isInteger(n) ? String(n) : n.toFixed(2);
+      }
+
+      function makeRows() {
+        return MENU_ITEMS.map(item => ({
+          ...item, livePrice: item.defaultPrice, draftPrice: String(item.defaultPrice), selected: false
+        }));
+      }
+
+      function App() {
+        const [apiBase] = useState(DEFAULT_API_BASE);
+        const [rows, setRows] = useState(() => makeRows());
+        const [activeScreen, setActiveScreen] = useState(SCREENS[0].id);
+        const [search, setSearch] = useState("");
+        const [status, setStatus] = useState({ msg: "Ready.", type: "info" });
+        const [loading, setLoading] = useState(false);
+
+        const screenRows = useMemo(() => rows.filter(r => r.screen === activeScreen), [rows, activeScreen]);
+
+        const filteredRows = useMemo(() => {
+          const q = search.trim().toLowerCase();
+          if (!q) return screenRows;
+          return screenRows.filter(r => r.name.toLowerCase().includes(q) || r.id.toLowerCase().includes(q) || r.category.toLowerCase().includes(q));
+        }, [screenRows, search]);
+
+        const groupedRows = useMemo(() => {
+          const map = {};
+          filteredRows.forEach(r => {
+            if (!map[r.category]) map[r.category] = [];
+            map[r.category].push(r);
+          });
+          return map;
+        }, [filteredRows]);
+
+        const selectedCount = screenRows.filter(r => r.selected).length;
+
+        function extractPrices(payload) {
+          if (!payload || typeof payload !== "object") return {};
+          if (payload.prices && typeof payload.prices === "object") return payload.prices;
+          if (payload.data && payload.data.prices && typeof payload.data.prices === "object") return payload.data.prices;
+          return payload;
+        }
+
+        async function loadFromBackend() {
+          setLoading(true);
+          try {
+            const res = await fetch(`${apiBase}/screens/${encodeURIComponent(activeScreen)}/prices`, { cache: "no-store" });
+            if (!res.ok) throw new Error(`Failed to load prices (${res.status})`);
+            const data = extractPrices(await res.json());
+            let matched = 0;
+            setRows(prev => prev.map(row => {
+              if (row.screen !== activeScreen) return row;
+              const inc = data[row.id];
+              if (inc === undefined || inc === null || inc === "") return row;
+              matched++;
+              return { ...row, livePrice: inc, draftPrice: String(inc) };
+            }));
+            setStatus({ msg: matched ? `Prices loaded — ${matched} matched.` : "Connected, but no matching prices were returned.", type: matched ? "ok" : "info" });
+          } catch (e) {
+            setStatus({ msg: e.message || "Could not load prices.", type: "err" });
+          } finally { setLoading(false); }
+        }
+
+        async function pushSelected() {
+          const updates = {};
+          rows.forEach(r => { if (r.screen === activeScreen && r.selected && r.draftPrice !== "") updates[r.id] = Number(r.draftPrice); });
+          if (!Object.keys(updates).length) { setStatus({ msg: "Select items first.", type: "info" }); return; }
+          setLoading(true);
+          try {
+            const res = await fetch(`${apiBase}/screens/${encodeURIComponent(activeScreen)}/prices`, {
+              method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates)
+            });
+            if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || "Push failed"); }
+            const data = extractPrices(await res.json());
+            setRows(prev => prev.map(r => r.screen !== activeScreen ? r : ({
+              ...r,
+              livePrice: data[r.id] ?? r.livePrice,
+              draftPrice: data[r.id] !== undefined ? String(data[r.id]) : r.draftPrice,
+              selected: false
+            })));
+            setStatus({ msg: `Pushed ${Object.keys(updates).length} update(s).`, type: "ok" });
+          } catch (e) { setStatus({ msg: e.message || "Push failed.", type: "err" }); }
+          finally { setLoading(false); }
+        }
+
+        async function pushSingle(row) {
+          setLoading(true);
+          try {
+            const res = await fetch(`${apiBase}/screens/${encodeURIComponent(activeScreen)}/prices`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ [row.id]: Number(row.draftPrice) })
+            });
+            if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || "Push failed"); }
+            const data = extractPrices(await res.json());
+            setRows(prev => prev.map(r => r.id === row.id ? {
+              ...r, livePrice: data[row.id] ?? r.livePrice, draftPrice: data[row.id] !== undefined ? String(data[row.id]) : r.draftPrice, selected: false
+            } : r));
+            setStatus({ msg: `Updated ${row.name}.`, type: "ok" });
+          } catch (e) { setStatus({ msg: e.message || "Push failed.", type: "err" }); }
+          finally { setLoading(false); }
+        }
+
+        useEffect(() => { setSearch(""); loadFromBackend(); }, [activeScreen]);
+
+        const statusClass = status.type === "ok" ? "status-ok" : status.type === "err" ? "status-err" : "status-info";
+
+        const toggleSelect = (id) => {
+          setRows(prev => prev.map(r => r.id === id ? { ...r, selected: !r.selected } : r));
+        };
+
+        const updateDraftPrice = (id, val) => {
+          setRows(prev => prev.map(r => r.id === id ? { ...r, draftPrice: val } : r));
+        };
+
+        const selectAllFiltered = () => {
+          const filteredIds = new Set(filteredRows.map(r => r.id));
+          setRows(prev => prev.map(r => filteredIds.has(r.id) ? { ...r, selected: true } : r));
+        };
+
+        const switchScreen = (id) => {
+          setRows(prev => prev.map(r => ({ ...r, selected: false })));
+          setActiveScreen(id);
+        };
+
+        const deselectAll = () => {
+          setRows(prev => prev.map(r => ({ ...r, selected: false })));
+        };
+
+        return React.createElement("div", { className: "app" },
+
+          // Header
+          React.createElement("div", { className: "header" },
+            React.createElement("div", null,
+              React.createElement("h1", null, "Pattie Bell Middleware"),
+              React.createElement("p", null, "Live Screen Menu & Price Controller")
+            )
+          ),
+
+          // Screen Tabs
+          React.createElement("div", { className: "tabs" },
+            SCREENS.map(s => React.createElement("button", {
+              key: s.id,
+              className: `tab ${s.id === activeScreen ? "active" : ""}`,
+              onClick: () => switchScreen(s.id)
+            }, s.label))
+          ),
+
+          // Status Bar
+          React.createElement("div", { className: "status-bar" },
+            React.createElement("span", { className: `msg ${statusClass}` },
+              loading && React.createElement("span", { className: "spinner" }),
+              status.msg
+            ),
+            React.createElement("span", { className: "count" }, `${screenRows.length} items`)
+          ),
+
+          // Controls
+          React.createElement("div", { className: "controls" },
+            React.createElement("div", { className: "search-wrap" },
+              React.createElement("input", {
+                type: "text",
+                placeholder: "Search items or categories...",
+                value: search,
+                onChange: e => setSearch(e.target.value)
+              })
+            ),
+            React.createElement("button", {
+              className: "btn btn-ghost",
+              onClick: loadFromBackend
+            }, "Refresh"),
+            React.createElement("button", {
+              className: "btn btn-dark",
+              onClick: selectAllFiltered
+            }, "Select All"),
+            React.createElement("button", {
+              className: "btn btn-dark",
+              onClick: deselectAll,
+              disabled: selectedCount === 0
+            }, "Clear")
+          ),
+
+          // Categorized Item Cards
+          filteredRows.length === 0
+            ? React.createElement("div", { className: "empty" },
+              React.createElement("div", { className: "empty-icon" }, "🔍"),
+              "No items match your search."
+            )
+            : Object.keys(groupedRows).map(cat => React.createElement("div", { key: cat },
+              React.createElement("div", { className: "category-title" }, cat),
+              groupedRows[cat].map(row => React.createElement("div", {
+                key: row.id,
+                className: `item-card ${row.selected ? "selected" : ""}`
+              },
+                React.createElement("div", { className: "card-top" },
+                  React.createElement("div", {
+                    className: `card-check ${row.selected ? "checked" : ""}`,
+                    onClick: () => toggleSelect(row.id)
+                  }),
+                  React.createElement("div", { className: "card-name" },
+                    row.name,
+                    React.createElement("div", { className: "card-id" }, row.id)
+                  )
+                ),
+                React.createElement("div", { className: "card-prices" },
+                  React.createElement("div", { className: "price-field" },
+                    React.createElement("span", { className: "price-label" }, "Live"),
+                    React.createElement("span", { className: `price-live ${row.livePrice === 0 ? "zero" : ""}` },
+                      `$${money(row.livePrice)}`
+                    )
+                  ),
+                  React.createElement("div", { className: "price-field" },
+                    React.createElement("span", { className: "price-label" }, "New Price"),
+                    React.createElement("input", {
+                      className: "price-input",
+                      type: "number",
+                      step: "0.01",
+                      value: row.draftPrice,
+                      onChange: e => updateDraftPrice(row.id, e.target.value)
+                    })
+                  ),
+                  React.createElement("button", {
+                    className: "push-single",
+                    disabled: loading || row.draftPrice === "",
+                    onClick: () => pushSingle(row)
+                  }, "Push")
+                )
+              ))
+            )),
+
+          // Floating Push Bar for Multi-Selection
+          selectedCount > 0 && React.createElement("div", { className: "push-bar" },
+            React.createElement("div", { className: "push-info" },
+              React.createElement("strong", null, selectedCount), " item(s) selected"
+            ),
+            React.createElement("button", {
+              className: "btn btn-blue",
+              disabled: loading,
+              onClick: pushSelected
+            }, "Push Selected")
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+    });
+  </script>
+</body>
+
+</html>

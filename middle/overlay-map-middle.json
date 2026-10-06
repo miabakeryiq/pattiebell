@@ -1,0 +1,512 @@
+{
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "items": [
+    {
+      "id": "lbl_breakfast_sm",
+      "label": "SM",
+      "x": 589,
+      "y": 210,
+      "fontSize": 20,
+      "type": "label"
+    },
+    {
+      "id": "lbl_breakfast_lg",
+      "label": "LG",
+      "x": 687,
+      "y": 209,
+      "fontSize": 20,
+      "type": "label"
+    },
+    {
+      "id": "lbl_pastas_sm",
+      "label": "SM",
+      "x": 1625,
+      "y": 225,
+      "fontSize": 20,
+      "type": "label"
+    },
+    {
+      "id": "lbl_pastas_m",
+      "label": "M",
+      "x": 1754,
+      "y": 224,
+      "fontSize": 20,
+      "type": "label"
+    },
+    {
+      "id": "lbl_pastas_lg",
+      "label": "LG",
+      "x": 1864,
+      "y": 223,
+      "fontSize": 20,
+      "type": "label"
+    },
+    {
+      "id": "codfish_callaloo_sm",
+      "label": "Codfish & Callaloo (SM)",
+      "x": 581,
+      "y": 275,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "codfish_callaloo_lg",
+      "label": "Codfish & Callaloo (LG)",
+      "x": 691,
+      "y": 270,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "ackee_saltfish_sm",
+      "label": "Ackee & Saltfish (SM)",
+      "x": 583,
+      "y": 332,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "ackee_saltfish_lg",
+      "label": "Ackee & Saltfish (LG)",
+      "x": 690,
+      "y": 327,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "callaloo_sm",
+      "label": "Callaloo (SM)",
+      "x": 585,
+      "y": 391,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "callaloo_lg",
+      "label": "Callaloo (LG)",
+      "x": 691,
+      "y": 390,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "codfish_okra_sm",
+      "label": "Codfish & Okra (SM)",
+      "x": 582,
+      "y": 444,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "codfish_okra_lg",
+      "label": "Codfish & Okra (LG)",
+      "x": 695,
+      "y": 441,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "liver_sm",
+      "label": "Liver (SM)",
+      "x": 583,
+      "y": 501,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "liver_lg",
+      "label": "Liver (LG)",
+      "x": 693,
+      "y": 491,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "okra_callaloo_sm",
+      "label": "Okra & Callaloo (SM)",
+      "x": 583,
+      "y": 557,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "okra_callaloo_lg",
+      "label": "Okra & Callaloo (LG)",
+      "x": 694,
+      "y": 548,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "okra_sm",
+      "label": "Okra (SM)",
+      "x": 585,
+      "y": 625,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "okra_lg",
+      "label": "Okra (LG)",
+      "x": 695,
+      "y": 617,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "porridge_sm",
+      "label": "Porridge (SM)",
+      "x": 585,
+      "y": 686,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "porridge_lg",
+      "label": "Porridge (LG)",
+      "x": 698,
+      "y": 684,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_oxtail_sm",
+      "label": "Oxtail Pasta (SM)",
+      "x": 1622,
+      "y": 295,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_oxtail_m",
+      "label": "Oxtail Pasta (M)",
+      "x": 1754,
+      "y": 290,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_oxtail_lg",
+      "label": "Oxtail Pasta (LG)",
+      "x": 1870,
+      "y": 293,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_snapper_sm",
+      "label": "King Fish/Snapper (SM)",
+      "x": 1623,
+      "y": 341,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_snapper_m",
+      "label": "King Fish/Snapper (M)",
+      "x": 1755,
+      "y": 338,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_snapper_lg",
+      "label": "King Fish/Snapper (LG)",
+      "x": 1868,
+      "y": 344,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_goat_sm",
+      "label": "Goat Pasta (SM)",
+      "x": 1623,
+      "y": 385,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_goat_m",
+      "label": "Goat Pasta (M)",
+      "x": 1757,
+      "y": 379,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_goat_lg",
+      "label": "Goat Pasta (LG)",
+      "x": 1871,
+      "y": 385,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_tilapia_sm",
+      "label": "Tilapia Pasta (SM)",
+      "x": 1620,
+      "y": 432,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_tilapia_m",
+      "label": "Tilapia Pasta (M)",
+      "x": 1757,
+      "y": 427,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_tilapia_lg",
+      "label": "Tilapia Pasta (LG)",
+      "x": 1870,
+      "y": 428,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_wings_sm",
+      "label": "Wings Pasta (SM)",
+      "x": 1624,
+      "y": 476,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_wings_m",
+      "label": "Wings Pasta (M)",
+      "x": 1755,
+      "y": 475,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_wings_lg",
+      "label": "Wings Pasta (LG)",
+      "x": 1870,
+      "y": 475,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_porgie_sm",
+      "label": "Porgie Pasta (SM)",
+      "x": 1622,
+      "y": 526,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_porgie_m",
+      "label": "Porgie Pasta (M)",
+      "x": 1755,
+      "y": 523,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_porgie_lg",
+      "label": "Porgie Pasta (LG)",
+      "x": 1873,
+      "y": 527,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_stewpeas_sm",
+      "label": "Stewpeas Pasta (SM)",
+      "x": 1623,
+      "y": 576,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_stewpeas_m",
+      "label": "Stewpeas Pasta (M)",
+      "x": 1759,
+      "y": 573,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_stewpeas_lg",
+      "label": "Stewpeas Pasta (LG)",
+      "x": 1876,
+      "y": 574,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_pork_ribs_sm",
+      "label": "Pork/Ribs Pasta (SM)",
+      "x": 1625,
+      "y": 624,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_pork_ribs_m",
+      "label": "Pork/Ribs Pasta (M)",
+      "x": 1761,
+      "y": 621,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_pork_ribs_lg",
+      "label": "Pork/Ribs Pasta (LG)",
+      "x": 1877,
+      "y": 621,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_chicken_sm",
+      "label": "Chicken Pasta (SM)",
+      "x": 1626,
+      "y": 674,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_chicken_m",
+      "label": "Chicken Pasta (M)",
+      "x": 1762,
+      "y": 671,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "pasta_chicken_lg",
+      "label": "Chicken Pasta (LG)",
+      "x": 1878,
+      "y": 672,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_pasta_sm",
+      "label": "Veggie Pasta Platter (SM)",
+      "x": 1625,
+      "y": 732,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_pasta_m",
+      "label": "Veggie Pasta Platter (M)",
+      "x": 1763,
+      "y": 732,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "veggie_pasta_lg",
+      "label": "Veggie Pasta Platter (LG)",
+      "x": 1879,
+      "y": 732,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "natty_sm",
+      "label": "Natty Pasta (SM)",
+      "x": 1628,
+      "y": 795,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "natty_m",
+      "label": "Natty Pasta (M)",
+      "x": 1769,
+      "y": 793,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "natty_lg",
+      "label": "Natty Pasta (LG)",
+      "x": 1883,
+      "y": 797,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "goat_head_soup",
+      "label": "Goat Head Soup",
+      "x": 439,
+      "y": 876,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "chicken_soup",
+      "label": "Chicken Soup",
+      "x": 438,
+      "y": 933,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "cow_foot_soup",
+      "label": "Cow Foot Soup",
+      "x": 439,
+      "y": 986,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "red_peas_chicken_soup",
+      "label": "Red Peas Chicken Soup",
+      "x": 521,
+      "y": 1046,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "broth",
+      "label": "Broth",
+      "x": 828,
+      "y": 866,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "gravy_only",
+      "label": "Gravy Only",
+      "x": 830,
+      "y": 920,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "iced_tea",
+      "label": "Iced Tea",
+      "x": 1320,
+      "y": 974,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "lemonade",
+      "label": "Lemonade",
+      "x": 1370,
+      "y": 1032,
+      "fontSize": 16,
+      "type": "price"
+    },
+    {
+      "id": "peanut_punch",
+      "label": "Peanut Punch",
+      "x": 1722,
+      "y": 974,
+      "fontSize": 16,
+      "type": "price"
+    }
+  ]
+}
